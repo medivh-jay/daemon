@@ -1,6 +1,6 @@
 # daemon
 golang start the daemon,
-quickly build a golang program with its own daemon
+quickly build a golang program with its own daemon. not support Windows
 
 ### examples
 ```go
