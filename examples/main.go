@@ -6,13 +6,16 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"syscall"
 
 	"github.com/medivh-jay/daemon"
+	"github.com/spf13/cobra"
 )
 
 // HTTPServer http 服务器示例
 type HTTPServer struct {
 	http *http.Server
+	cmd  *cobra.Command
 }
 
 // PidSavePath pid保存路径
@@ -25,8 +28,15 @@ func (httpServer *HTTPServer) Name() string {
 	return "http"
 }
 
+// SetCommand 从 daemon 获得 cobra.Command 对象
+func (httpServer *HTTPServer) SetCommand(cmd *cobra.Command) {
+	cmd.PersistentFlags().StringP("test", "t", "yes", "")
+	httpServer.cmd = cmd
+}
+
 // Start 启动web服务
 func (httpServer *HTTPServer) Start() {
+	fmt.Println(httpServer.cmd.Flags().GetString("test"))
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println("hello world")
 		writer.Write([]byte("hello world"))
@@ -57,7 +67,9 @@ func main() {
 
 	// 初始化一个新的运行程序
 	proc := daemon.NewProcess(new(HTTPServer)).SetPipeline(nil, out, err)
-
+	proc.On(syscall.SIGTERM, func() {
+		fmt.Println("a custom signal")
+	})
 	// 示例,多级命令服务
 	daemon.GetCommand().AddWorker(proc).AddWorker(proc)
 	// 示例,主服务

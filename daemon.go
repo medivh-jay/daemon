@@ -14,6 +14,12 @@ var (
 	command = &Daemon{command: &cobra.Command{Use: Name()}}
 )
 
+// Command 给自己的运行worker设置命令, 毕竟自己的程序也会需要各种参数, 如果实现了这个接口
+// ,SetCommand 将在启动前执行, 传入 cobra.Command 对象, 可保存以供使用
+type Command interface {
+	SetCommand(cmd *cobra.Command)
+}
+
 func start(worker *Process) *cobra.Command {
 	return &cobra.Command{
 		Use:   "start",
@@ -88,6 +94,9 @@ func (daemon *Daemon) AddWorker(worker *Process) *Daemon {
 	}
 
 	child := &Daemon{command: &cobra.Command{Use: worker.worker.Name()}, parent: daemon}
+	if _, ok := worker.worker.(Command); ok {
+		worker.worker.(Command).SetCommand(child.command)
+	}
 	child.command.AddCommand(start(worker), stop(worker), restart(worker))
 	daemon.command.AddCommand(child.command)
 	daemon.children[worker.worker.Name()] = child
@@ -103,6 +112,9 @@ func (daemon *Daemon) GetParent() *Daemon {
 func Register(worker *Process) {
 	command.parent = nil
 	command.worker = worker
+	if _, ok := worker.worker.(Command); ok {
+		worker.worker.(Command).SetCommand(command.command)
+	}
 	command.command.AddCommand(start(worker), stop(worker), restart(worker))
 }
 
