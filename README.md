@@ -4,6 +4,10 @@ quickly build a golang service with its own daemon. not support Windows
 
 ### Usage
 
+```go
+import "github.com/medivh-jay/daemon"
+```
+
 - Fisrt, create a object implement daemon.Worker, like this
 ```go
 // HTTPServer example 
