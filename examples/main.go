@@ -30,6 +30,8 @@ func (httpServer *HTTPServer) Name() string {
 
 // SetCommand 从 daemon 获得 cobra.Command 对象
 func (httpServer *HTTPServer) SetCommand(cmd *cobra.Command) {
+	// 在这里添加参数时他的参数不是对应服务的 start stop restart 命令的, 比如这个示例服务
+	// 他对应的是示例服务命令, s所以这里添加的自定义 flag 应该在 start 之前传入
 	cmd.PersistentFlags().StringP("test", "t", "yes", "")
 	httpServer.cmd = cmd
 }
@@ -71,6 +73,8 @@ func main() {
 		fmt.Println("a custom signal")
 	})
 	// 示例,多级命令服务
+	// 这里的示例由于实现了 Command 接口, 所以这里会出现 flag test 不存在的情况, 实际情况, 每一个 worker的都应该是唯一的
+	// 不要共享一个 worker 对象指针
 	daemon.GetCommand().AddWorker(proc).AddWorker(proc)
 	// 示例,主服务
 	daemon.Register(proc)
