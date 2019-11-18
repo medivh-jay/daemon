@@ -1,6 +1,6 @@
 # daemon
 golang start the daemon,
-quickly build a golang service with its own daemon. not support Windows
+quickly build a golang service with its own daemon. Windows only support start command
 
 ### Usage
 
