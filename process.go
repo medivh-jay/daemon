@@ -9,13 +9,13 @@ import (
 )
 
 const (
-	// DaemonTag 标识是子进程的环境变量名称
-	DaemonTag = "DAEMON"
+	// EnvName 标识是子进程的环境变量名称
+	EnvName = "DAEMON"
 )
 
 // Worker 具体工作程序接口
 type Worker interface {
-	// PidSavePath piid 文件保存路径
+	// PidSavePath pid 文件保存路径
 	PidSavePath() string
 	// Name pid文件的名字
 	Name() string
@@ -63,7 +63,7 @@ func NewProcess(worker Worker) *Process {
 			Pid:          os.Getpid(),
 		},
 		worker:    worker,
-		DaemonTag: DaemonTag,
+		DaemonTag: EnvName,
 	}
 	process.registerDefaultStopHandle()
 	process.registerDefaultRestartHandle()
@@ -82,8 +82,8 @@ func (process *Process) SetPipeline(pipes ...*os.File) *Process {
 	return process
 }
 
-// SetDaemonTag 设置Deamon标识环境变量, 因为 golang 的进程机制无法像常规的进程管理一下正常fork,
-// 所以使用的 exec.COmmand 启动一个进程, 这个方法启动的进程有一个问题是, 启动起来的子进程的 ppid 为当前用户 systemd,
+// SetDaemonTag 设置Daemon标识环境变量, 因为 golang 的进程机制无法像常规的进程管理一下正常fork,
+// 所以使用的 exec.Command 启动一个进程, 这个方法启动的进程有一个问题是, 启动起来的子进程的 ppid 为当前用户 systemd,
 // 所以以前的常用代码  fork 的 ppid == 1 这类操作在这里很难实现, 所以需要一个标识让 exec.Command 启动的本身知道自己是被 exec.Command 启动起来的,
 // 有很多中方法, 但是大多都会侵入程序本身逻辑, 就没必要了, 所以使用一个环境变量来让子进程读取, 但是再怎么避免, 可能默认的环境变量名 DAEMON 都可能是具体程序
 // 需要的环境变量, 所以这里提供方法修改默认的环境变量名称
@@ -152,7 +152,7 @@ func (process *Process) Run() error {
 	}
 
 	cmd := exec.Command(os.Args[0], os.Args[1:]...)
-	cmd.Env = append(os.Environ(), fmt.Sprintf("%s=true", DaemonTag))
+	cmd.Env = append(os.Environ(), fmt.Sprintf("%s=true", EnvName))
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = process.Pipeline[0], process.Pipeline[1], process.Pipeline[2]
 
 	err := cmd.Start()

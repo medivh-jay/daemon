@@ -41,10 +41,10 @@ func (httpServer *HTTPServer) Start() {
 	fmt.Println(httpServer.cmd.Flags().GetString("test"))
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println("hello world")
-		writer.Write([]byte("hello world"))
+		_, _ = writer.Write([]byte("hello world"))
 	})
 	httpServer.http = &http.Server{Handler: http.DefaultServeMux, Addr: ":9047"}
-	httpServer.http.ListenAndServe()
+	_ = httpServer.http.ListenAndServe()
 }
 
 // Stop 关闭web服务

@@ -34,6 +34,6 @@ func (pid Pid) Save() error {
 
 // Remove 关闭文件描述符并删除pid文件
 func (pid Pid) Remove() {
-	pid.File.Close()
+	_ = pid.File.Close()
 	_ = os.Remove(pid.SaveFilename())
 }
