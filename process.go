@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"syscall"
 )
 
 const (
@@ -103,7 +102,7 @@ func (process *Process) On(signal os.Signal, fn func()) {
 
 // 注册默认的关闭方法, 监听了 USR1 信号
 func (process *Process) registerDefaultStopHandle() {
-	process.On(syscall.SIGUSR1, func() {
+	process.On(SIGUSR1, func() {
 		err := process.worker.Stop()
 		if err != nil {
 			_, _ = process.Pipeline[1].WriteString(err.Error())
@@ -115,7 +114,7 @@ func (process *Process) registerDefaultStopHandle() {
 
 // 注册默认的重启方法, 监听了 USR2 信号
 func (process *Process) registerDefaultRestartHandle() {
-	process.On(syscall.SIGUSR2, func() {
+	process.On(SIGUSR2, func() {
 		var done = make(chan bool)
 		go func() {
 			err := process.worker.Restart()

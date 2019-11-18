@@ -3,12 +3,11 @@ package daemon
 import (
 	"os"
 	"path"
-	"syscall"
 )
 
 // 锁文件
 func lock(file *os.File) error {
-	err := syscall.Flock(int(file.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
+	err := Flock(int(file.Fd()), LOCK_EX|LOCK_NB)
 	return err
 }
 

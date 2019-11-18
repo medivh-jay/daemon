@@ -2,12 +2,10 @@ package daemon
 
 import (
 	"fmt"
+	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
 	"strconv"
-	"syscall"
-
-	"github.com/spf13/cobra"
 )
 
 var (
@@ -50,7 +48,7 @@ func stop(worker *Process) *cobra.Command {
 			if err != nil {
 				panic(err)
 			}
-			_ = process.Signal(syscall.SIGUSR1)
+			_ = process.Signal(SIGUSR1)
 		},
 	}
 }
@@ -72,7 +70,7 @@ func restart(worker *Process) *cobra.Command {
 			if err != nil {
 				panic(err)
 			}
-			_ = process.Signal(syscall.SIGUSR2)
+			_ = process.Signal(SIGUSR2)
 		},
 	}
 }
