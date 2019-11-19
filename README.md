@@ -8,7 +8,8 @@ quickly build a golang service with its own daemon. Windows only support start c
 import "github.com/medivh-jay/daemon"
 ```
 
-- Fisrt, create a object implement daemon.Worker, like this
+- First, create a object implement daemon.Worker, like this
+
 ```go
 // HTTPServer example 
 type HTTPServer struct {
