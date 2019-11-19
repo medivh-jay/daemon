@@ -151,7 +151,7 @@ func (process *Process) Run() error {
 	}
 
 	cmd := exec.Command(os.Args[0], os.Args[1:]...)
-	cmd.Env = append(os.Environ(), fmt.Sprintf("%s=true", EnvName))
+	cmd.Env = append(os.Environ(), fmt.Sprintf("%s=true", process.DaemonTag))
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = process.Pipeline[0], process.Pipeline[1], process.Pipeline[2]
 
 	err := cmd.Start()

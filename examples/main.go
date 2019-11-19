@@ -73,7 +73,7 @@ func main() {
 		fmt.Println("a custom signal")
 	})
 	// 示例,多级命令服务
-	// 这里的示例由于实现了 Command 接口, 所以这里会出现 flag test 不存在的情况, 实际情况, 每一个 worker的都应该是唯一的
+	// 这里的示例由于实现了 Command 接口, 所以这里会出现 flag test 不存在的情况, 实际情况, 每一个 worker 都应该是唯一的
 	// 不要共享一个 worker 对象指针
 	daemon.GetCommand().AddWorker(proc).AddWorker(proc)
 	// 示例,主服务
