@@ -40,5 +40,6 @@ func create(filename string) (file *os.File, err error) {
 	if err = lock(file); err != nil {
 		return
 	}
+	err = file.Truncate(0)
 	return
 }
