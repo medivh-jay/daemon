@@ -96,4 +96,4 @@ go build -o myapp main.go
 - You can use the GetCommand method to get the cobra.Command object to set up more command content
 - command start have a flag --daemon
 
-If you don't need the program to run as daemon mode for the time being,for example, you're using GoLand for debugging. You can set Program arguments to --daemon=false on Run/Debug Configurations of GoLand
+If you don't need the program to run as daemon mode for the time being,for example, you're using GoLand for debugging. You can set Program arguments to *(your app) start --daemon=false on Run/Debug Configurations of GoLand
