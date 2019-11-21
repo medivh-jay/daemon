@@ -19,16 +19,29 @@ type Command interface {
 }
 
 func start(worker *Process) *cobra.Command {
-	return &cobra.Command{
+	start := &cobra.Command{
 		Use:   "start",
 		Short: fmt.Sprintf("start %s", worker.worker.Name()),
 		Run: func(cmd *cobra.Command, args []string) {
-			err := worker.Run()
+			isDaemon, err := cmd.Flags().GetBool("daemon")
+			if err != nil {
+				isDaemon = true
+			}
+
+			// 如果传入 --daemon=false, 这里将直接把环境变量 DAEMON 写为 true, 让真正的程序逻辑非后台运行
+			if !isDaemon {
+				_ = os.Setenv(worker.DaemonTag, "true")
+			}
+
+			err = worker.Run()
 			if err != nil {
 				panic(err)
 			}
 		},
 	}
+
+	start.PersistentFlags().BoolP("daemon", "d", true, "--daemon=false")
+	return start
 }
 
 func stop(worker *Process) *cobra.Command {

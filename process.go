@@ -34,7 +34,7 @@ type (
 		Pipeline       [3]*os.File    // 输入输出管道, 0->input, 1->output, 2->err
 		Pid            *Pid           // pid 对象信息
 		worker         Worker         // 工作对象
-		DaemonTag      string         // 标识是子进程的环境变量名称
+		DaemonTag      string         // 标识是子进程的环境变量名称,当该值所标识的环境变量值为 false 时, 程序将不会进入daemon运行
 		SignalHandlers signalHandlers // 信号处理器
 	}
 )
@@ -64,6 +64,7 @@ func NewProcess(worker Worker) *Process {
 		worker:    worker,
 		DaemonTag: EnvName,
 	}
+	process.registerDefaultInterruptHandle()
 	process.registerDefaultStopHandle()
 	process.registerDefaultRestartHandle()
 	return process
@@ -98,6 +99,18 @@ func (process *Process) On(signal os.Signal, fn func()) {
 		process.SignalHandlers = make(signalHandlers)
 	}
 	process.SignalHandlers[signal] = fn
+}
+
+// 监听终端操作
+func (process *Process) registerDefaultInterruptHandle() {
+	process.On(os.Interrupt, func() {
+		err := process.worker.Stop()
+		if err != nil {
+			_, _ = process.Pipeline[1].WriteString(err.Error())
+		}
+		process.Pid.Remove()
+		os.Exit(0)
+	})
 }
 
 // 注册默认的关闭方法, 监听了 USR1 信号
