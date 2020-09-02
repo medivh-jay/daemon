@@ -142,7 +142,7 @@ If you don't want to import spf13/cobra, Can be used directly
     var process = daemon.NewProcess(new(HTTPServer))
     _ = process.Run()
 ```
-Simply let the service run to the background
+let the service run to the background
 
 - You can use the GetCommand method to get the cobra.Command object to set up more command content
 - command start have a flag --daemon
