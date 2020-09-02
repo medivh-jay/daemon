@@ -35,6 +35,10 @@ func start(worker *Process) *cobra.Command {
 
 			err = worker.Run()
 			if err != nil {
+				if err.Error() == "resource temporarily unavailable" {
+					fmt.Println("resource temporarily unavailable")
+					os.Exit(0)
+				}
 				panic(err)
 			}
 		},
@@ -51,6 +55,9 @@ func stop(worker *Process) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			data, err := ioutil.ReadFile(worker.Pid.SaveFilename())
 			if err != nil {
+				if os.IsNotExist(err) {
+					return
+				}
 				panic(err)
 			}
 			pid, err := strconv.Atoi(string(data))
@@ -73,6 +80,22 @@ func restart(worker *Process) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			data, err := ioutil.ReadFile(worker.Pid.SaveFilename())
 			if err != nil {
+				if os.IsNotExist(err) {
+					isDaemon, err := cmd.Flags().GetBool("daemon")
+					if err != nil {
+						isDaemon = true
+					}
+
+					if !isDaemon {
+						_ = os.Setenv(worker.DaemonTag, "true")
+					}
+
+					err = worker.Run()
+					if err != nil {
+						panic(err)
+					}
+					return
+				}
 				panic(err)
 			}
 			pid, err := strconv.Atoi(string(data))
