@@ -128,13 +128,13 @@ func (process *Process) registerDefaultStopHandle() {
 // 注册默认的重启方法, 监听了 USR2 信号
 func (process *Process) registerDefaultRestartHandle() {
 	process.On(SIGUSR2, func() {
+		process.Pid.Remove() // 将删除pid的操作移动到这里, 因为在下边可能导致 pid 还没有释放导致重启报错
 		var done = make(chan bool)
 		go func() {
 			err := process.worker.Restart()
 			if err != nil {
 				_, _ = process.Pipeline[1].WriteString(err.Error())
 			}
-			process.Pid.Remove()
 			done <- true
 		}()
 		_ = os.Unsetenv(process.DaemonTag)
