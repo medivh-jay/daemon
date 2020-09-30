@@ -1,3 +1,5 @@
+daemon have been moved to [kenretto/daemon](https://github.com/kenretto/daemon) !
+
 # daemon
 golang start the daemon,
 quickly build a golang service with its own daemon. Windows only support start command.
